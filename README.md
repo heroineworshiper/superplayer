@@ -24,6 +24,8 @@ Simple music player with some unusual features.
 Software volume boost when the bluetooth speaker isn't loud enough.
 Recursively advances through the file system to search for the next song.
 
+Requires manually enabling filesystem access.
+
 ![A screenshot of the project](screen.png)
 
 
