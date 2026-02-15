@@ -78,6 +78,9 @@ public class Player extends Service {
     static void start()
     {
         //Log.i("Player", "start instance=" + instance);
+
+        Stuff.playingDir = new String(Stuff.currentDir);
+        Stuff.playingFile = new String(Stuff.currentFile);
         started = true;
         Stuff.isPlaying = true;
         Intent serviceIntent = new Intent(MainActivity.instance, Player.class);
@@ -104,16 +107,25 @@ public class Player extends Service {
                     playFile();
                     if(!interrupted && !error)
                     {
-                        error = MainActivity.advanceSong(false);
-                        if(!error)
+                        String[] result = MainActivity.findNext(false, Stuff.playingDir, Stuff.playingFile);
+                        if(result[0] != null && result[1] != null) {
+                            Stuff.playingDir = result[0];
+                            Stuff.playingFile = result[1];
+                            error = false;
                             Stuff.currentTime = 0;
-                            Stuff.save();
                             MainActivity.instance.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Stuff.currentDir = new String(Stuff.playingDir);
+                                    Stuff.currentFile = new String(Stuff.playingFile);
+                                    Prober.instance.probe();
+                                    Stuff.save();
                                     MainActivity.instance.updateFiles();
                                 }
                             });
+                        }
+                        else
+                            error = true;
                     }
                 }
 
@@ -136,7 +148,7 @@ public class Player extends Service {
 
     void playFile()
     {
-        File file = new File(Stuff.currentDir + "/" + Stuff.currentFile);
+        File file = new File(Stuff.playingDir + "/" + Stuff.playingFile);
         MediaExtractor extractor = new MediaExtractor();
         try {
             extractor.setDataSource(file.getAbsolutePath());

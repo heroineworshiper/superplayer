@@ -29,6 +29,8 @@ public class Stuff {
     static final String DEFAULT_DIR = "/sdcard";
     static String currentDir = DEFAULT_DIR;
     static String currentFile = "";
+    static String playingDir = "";
+    static String playingFile = "";
     static long currentTime = 0; // in seconds
     static int volume = 0;
     static boolean isPlaying = false; // goes false when the player finishes
@@ -51,6 +53,8 @@ public class Stuff {
         SharedPreferences file = context.getSharedPreferences("settings", 0);
         currentFile = file.getString("currentFile", currentFile);
         currentDir = file.getString("currentDir", currentDir);
+        playingFile = file.getString("playingFile", currentFile);
+        playingDir = file.getString("playingDir", currentDir);
         volume = file.getInt("volume", volume);
         currentTime = file.getLong("currentTime", currentTime);
         length = file.getLong("length", length);
@@ -63,6 +67,8 @@ public class Stuff {
             SharedPreferences file2 = context.getSharedPreferences("settings", 0);
             SharedPreferences.Editor file = file2.edit();
 
+            file.putString("playingDir", playingDir);
+            file.putString("playingFile", playingFile);
             file.putString("currentDir", currentDir);
             file.putString("currentFile", currentFile);
             file.putInt("volume", volume);

@@ -67,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
 
         MainActivity.instance = this;
         Stuff.init(this);
+        // go back to the playing file if we were browsing elsewhere
+        if(!Stuff.playingFile.isEmpty() && !Stuff.playingDir.isEmpty())
+        {
+            Stuff.currentFile = new String(Stuff.playingFile);
+            Stuff.currentDir = new String(Stuff.playingDir);
+        }
         Log.i("MainActivity", "onCreate currentFile=" + Stuff.currentFile);
         volume = (TextView) findViewById(R.id.volume);
         current = (TextView) findViewById(R.id.currentTime);
@@ -141,23 +147,23 @@ public class MainActivity extends AppCompatActivity {
                 if (!error && wantPlayback) Player.start();
                 break;
             }
-        case R.id.end: {
-            wantPlayback = Stuff.isPlaying;
-            Player.stop();
-            boolean error = advanceSong(false);
-            if(!error) updateFiles();
-            Stuff.currentTime = 0;
-            Stuff.save();
-            updateProgress();
-            if (!error && wantPlayback) Player.start();
-            break;
-        }
-
-        case R.id.volumeUp:
-                Stuff.volume++;
+            case R.id.end: {
+                wantPlayback = Stuff.isPlaying;
+                Player.stop();
+                boolean error = advanceSong(false);
+                if(!error) updateFiles();
+                Stuff.currentTime = 0;
                 Stuff.save();
-                updateVolume();
+                updateProgress();
+                if (!error && wantPlayback) Player.start();
                 break;
+            }
+
+            case R.id.volumeUp:
+                    Stuff.volume++;
+                    Stuff.save();
+                    updateVolume();
+                    break;
             case R.id.volumeDown:
                 if(Stuff.volume > 0) Stuff.volume--;
                 Stuff.save();

@@ -43,8 +43,15 @@ public class Prober extends Thread {
     {
         synchronized (this)
         {
-            this.newDir = new String(Stuff.currentDir);
-            this.newFile = new String(Stuff.currentFile);
+            if(Stuff.isPlaying)
+            {
+                this.newDir = new String(Stuff.playingDir);
+                this.newFile = new String(Stuff.playingFile);
+            }
+            else {
+                this.newDir = new String(Stuff.currentDir);
+                this.newFile = new String(Stuff.currentFile);
+            }
             started.release();
         }
     }
