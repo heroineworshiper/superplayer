@@ -96,7 +96,8 @@ public class Prober extends Thread {
                     e.printStackTrace();
                 }
 
-                Stuff.length = duration / 1000;
+// don't step on the duration if we change directories during playback
+                if(duration > 0) Stuff.length = duration / 1000;
                 MainActivity.instance.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

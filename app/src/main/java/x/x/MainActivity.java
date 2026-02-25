@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         MainActivity.instance = this;
         Stuff.init(this);
-        // go back to the playing file if we were browsing elsewhere
+// go to the playing file if we're restarting
         if(!Stuff.playingFile.isEmpty() && !Stuff.playingDir.isEmpty())
         {
             Stuff.currentFile = new String(Stuff.playingFile);
@@ -407,7 +407,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     DirEntry file = files[position];
                     if(file.isDir) {
-                        // set the textbox
+// selected a directory
+// set the textbox
 //                        title.setText(file.name + "/");
 //                        Log.i("MainActivity", "updateFiles " + file.name);
                         if (file.name == "..") {
@@ -423,7 +424,13 @@ public class MainActivity extends AppCompatActivity {
                         // strip trailing / from directory
                         while(Stuff.currentDir.length() > 1 && Stuff.currentDir.charAt(Stuff.currentDir.length() - 1) == '/')
                             Stuff.currentDir = Stuff.currentDir.substring(0, Stuff.currentDir.length() - 1);
-                        Stuff.currentFile = "";
+
+// if we entered the currently playing file's directory, 
+// select the currently playing file
+                        if(Stuff.currentDir.equals(Stuff.playingDir))
+                            Stuff.currentFile = new String(Stuff.playingFile);
+                        else
+                            Stuff.currentFile = "";
                         // reposition the listview
                         resetListY = true;
                         Stuff.save();
@@ -433,6 +440,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else if(!Stuff.currentFile.equals(files[position].name))
                     {
+// selected a different file
                         Player.stop();
                         Stuff.currentFile = files[position].name;
                         Stuff.currentTime = 0;
