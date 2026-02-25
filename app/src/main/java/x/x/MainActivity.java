@@ -103,13 +103,11 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 usingSeekBar = false;
                 int newPosition = seekBar.getProgress();
-                if (Stuff.isPlaying) {
-                    Player.stop();
-                    Stuff.currentTime = newPosition;
-                    Player.start();
-                } else {
-                    Stuff.currentTime = newPosition;
-                }
+                boolean wantPlayback = Player.isPlaying;
+                Player.stop(); // don't step on Stuff.currentTime
+                Stuff.currentTime = newPosition;
+//                    Log.i("MainActivity", "onStopTrackingTouch currentTime=" + Stuff.currentTime);
+                if(wantPlayback) Player.start();
             }
         });
 
@@ -126,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         boolean wantPlayback;
         switch (view.getId()) {
             case R.id.play:
-                if (Stuff.isPlaying)
+                if (Player.isPlaying)
                     Player.stop();
                 else {
                     Player.start();
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.rewind: {
-                wantPlayback = Stuff.isPlaying;
+                wantPlayback = Player.isPlaying;
                 Player.stop();
                 boolean error = false;
                 if (Stuff.currentTime < 10) {
@@ -148,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case R.id.end: {
-                wantPlayback = Stuff.isPlaying;
+                wantPlayback = Player.isPlaying;
                 Player.stop();
                 boolean error = advanceSong(false);
                 if(!error) updateFiles();
@@ -457,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
 
     void updateButton()
     {
-        if(Stuff.isPlaying)
+        if(Player.isPlaying)
             play.setText(Html.fromHtml("&#9208;").toString());
         else
             play.setText(Html.fromHtml("&#9654;").toString());
@@ -472,8 +470,11 @@ public class MainActivity extends AppCompatActivity {
             String formatted = String.format("%d:%02d", minutes, seconds);
             current.setText(formatted);
 
-            progress.setProgress((int)Stuff.currentTime);
             progress.setMax((int)Stuff.length);
+            progress.setProgress((int)Stuff.currentTime);
+
+//            Log.i("MainActivity", "updateProgress length=" + Stuff.length + 
+//                " currentTime=" + Stuff.currentTime);
         }
 
         if(Stuff.length > 0) {

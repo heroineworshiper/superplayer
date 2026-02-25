@@ -45,12 +45,17 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.Semaphore;
 
 public class Player extends Service {
-    static Player instance;
-    boolean interrupted;
-    boolean error;
-    Semaphore done = new Semaphore(0);
-    static Semaphore startedLock = new Semaphore(0);
-    static boolean started = false;
+    static volatile Player instance;
+    volatile boolean interrupted;
+    volatile boolean error;
+    volatile Semaphore done = new Semaphore(0);
+    static volatile Semaphore startedLock = new Semaphore(0);
+// the thread is running & needs to be joined, 
+// but is not necessarily playing anything
+    static volatile boolean started = false;
+// the thread is running & playing
+// goes false when the player finishes
+    static volatile boolean isPlaying = false; 
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -78,11 +83,13 @@ public class Player extends Service {
     static void start()
     {
         //Log.i("Player", "start instance=" + instance);
+// must always clear out an old thread based on the started flag
+        stop();
 
         Stuff.playingDir = new String(Stuff.currentDir);
         Stuff.playingFile = new String(Stuff.currentFile);
         started = true;
-        Stuff.isPlaying = true;
+        isPlaying = true;
         Intent serviceIntent = new Intent(MainActivity.instance, Player.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             MainActivity.instance.startForegroundService(serviceIntent);
@@ -129,7 +136,7 @@ public class Player extends Service {
                     }
                 }
 
-                Stuff.isPlaying = false;
+                isPlaying = false;
                 done.release();
                 MainActivity.instance.runOnUiThread(new Runnable() {
                     @Override

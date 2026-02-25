@@ -33,7 +33,6 @@ public class Stuff {
     static String playingFile = "";
     static long currentTime = 0; // in seconds
     static int volume = 0;
-    static boolean isPlaying = false; // goes false when the player finishes
     static long length = 0; // length of current file in seconds
 
     static void init(Context context)
