@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     static SeekBar progress;
     static Button play;
     static ListView fileList;
+    static CheckBox keepAlive;
     static boolean usingSeekBar = false;
     // just changed directory
     boolean resetListY = true;
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         progress = (SeekBar) findViewById(R.id.seekBar);
         play = (Button) findViewById(R.id.play);
         fileList = (ListView)findViewById(R.id.fileList);
+        keepAlive = (CheckBox)findViewById(R.id.keep_alive);
 
         progress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -111,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        keepAlive.setChecked(Stuff.keepAlive);
         updateFiles();
         updateButton();
         updateProgress();
@@ -166,6 +169,11 @@ public class MainActivity extends AppCompatActivity {
                 if(Stuff.volume > 0) Stuff.volume--;
                 Stuff.save();
                 updateVolume();
+                break;
+
+            case R.id.keep_alive:
+                Stuff.keepAlive = keepAlive.isChecked();
+                Stuff.save();
                 break;
         }
     }

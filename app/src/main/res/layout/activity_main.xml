@@ -80,30 +80,53 @@
 
             <TextView
                 android:layout_height="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center|top"
-                android:text="VOLUME BOOST:"
+                android:text="KEEP\nALIVE:"
                 android:textColor="#000000"
-                android:textSize="24sp" />
+                android:textSize="18sp" />
+
+            <CheckBox
+                android:id="@+id/keep_alive"
+                android:layout_weight="0.3"
+                android:gravity="left|center"
+                android:layout_height="match_parent"
+                android:buttonTint="#000000"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:onClick="onClick" />
+
+
+
+
+            <TextView
+                android:layout_height="match_parent"
+                android:minWidth="200dp"
+                android:layout_weight=".5"
+                android:gravity="center|top"
+                android:text="VOLUME\nBOOST:"
+                android:textColor="#000000"
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/volumeUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal|center_vertical"
-                android:layout_weight="1"
+                android:layout_weight="0.5"
                 android:clickable="true"
                 android:onClick="onClick"
                 android:text="+"
+                android:minWidth="150dp"
                 android:textSize="30dp"/>
 
             <TextView
                 android:id="@+id/volume"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight=".2"
                 android:gravity="center"
                 android:text="0"
-                android:minWidth="30dp"
+                android:minWidth="70dp"
                 android:textColor="#000000"
                 android:textSize="30dp" />
             <Button
@@ -111,10 +134,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal|center_vertical"
-                android:layout_weight="1"
+                android:layout_weight="0.5"
                 android:clickable="true"
                 android:onClick="onClick"
                 android:text="-"
+                android:minWidth="150dp"
                 android:textSize="30dp"/>
 
         </TableRow>

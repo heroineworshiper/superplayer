@@ -33,7 +33,10 @@ public class Stuff {
     static String playingFile = "";
     static long currentTime = 0; // in seconds
     static int volume = 0;
+    static boolean keepAlive = false;
     static long length = 0; // length of current file in seconds
+    static int[] keepAliveBuffer = new int[32768];
+    static int keepAliveOffset = 0;
 
     static void init(Context context)
     {
@@ -43,6 +46,8 @@ public class Stuff {
             Stuff.context = context;
             new Prober();
             load();
+            for(int i = 0; i < keepAliveBuffer.length; i++)
+                keepAliveBuffer[i] = (int)(Math.random() * 16 - 8);
         }
     }
 
@@ -55,6 +60,7 @@ public class Stuff {
         playingFile = file.getString("playingFile", currentFile);
         playingDir = file.getString("playingDir", currentDir);
         volume = file.getInt("volume", volume);
+        keepAlive = file.getBoolean("keepAlive", keepAlive);
         currentTime = file.getLong("currentTime", currentTime);
         length = file.getLong("length", length);
     }
@@ -71,6 +77,7 @@ public class Stuff {
             file.putString("currentDir", currentDir);
             file.putString("currentFile", currentFile);
             file.putInt("volume", volume);
+            file.putBoolean("keepAlive", keepAlive);
             file.putLong("currentTime", currentTime);
             file.putLong("length", length);
             file.commit();

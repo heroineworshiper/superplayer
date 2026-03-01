@@ -86,13 +86,15 @@ public class Player extends Service {
 // must always clear out an old thread based on the started flag
         stop();
 
-        Stuff.playingDir = new String(Stuff.currentDir);
-        Stuff.playingFile = new String(Stuff.currentFile);
-        started = true;
-        isPlaying = true;
-        Intent serviceIntent = new Intent(MainActivity.instance, Player.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            MainActivity.instance.startForegroundService(serviceIntent);
+        if(!Stuff.currentFile.isEmpty()) { // don't forget the currently playing file in certain cases
+            Stuff.playingDir = new String(Stuff.currentDir);
+            Stuff.playingFile = new String(Stuff.currentFile);
+            started = true;
+            isPlaying = true;
+            Intent serviceIntent = new Intent(MainActivity.instance, Player.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                MainActivity.instance.startForegroundService(serviceIntent);
+            }
         }
     }
 
@@ -339,6 +341,13 @@ public class Player extends Service {
             int value = (pcm[startByte + i] & 0xff) +
                     (pcm[startByte + i + 1] << 8); // extend sign
             value *= Stuff.volume + 1;
+            if(Stuff.keepAlive)
+            {
+                value += Stuff.keepAliveBuffer[Stuff.keepAliveOffset++];
+                if(Stuff.keepAliveOffset >= Stuff.keepAliveBuffer.length)
+                    Stuff.keepAliveOffset = 0;
+            }
+
             if(value > 0x7fff) value = 0x7fff;
             else
             if(value < -0x8000) value = -0x8000;
