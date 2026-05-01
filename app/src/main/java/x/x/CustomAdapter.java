@@ -24,7 +24,9 @@ package x.x;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +69,11 @@ class CustomAdapter extends ArrayAdapter<String> {
         //Log.i("CustomAdapter", "textView=" + textView + " position=" + position);
         if (textView != null) {
             DirEntry file = files[position];
+            // show start of text
+            textView.setMaxLines(1);
+            textView.setEllipsize(TextUtils.TruncateAt.END);
+            textView.setSingleLine(true);
+            textView.setGravity(Gravity.START);
             if (file.isDir) {
                 textView.setText(file.name + "/");
                 textView.setTextColor(Color.BLUE);

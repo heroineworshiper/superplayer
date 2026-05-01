@@ -40,7 +40,7 @@ import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity {
     static MainActivity instance;
-    static TextView volume;
+    static CheckBox volumeBoost;
     static TextView current;
     static TextView end;
     static SeekBar progress;
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             Stuff.currentDir = new String(Stuff.playingDir);
         }
         Log.i("MainActivity", "onCreate currentFile=" + Stuff.currentFile);
-        volume = (TextView) findViewById(R.id.volume);
+        volumeBoost = (CheckBox) findViewById(R.id.volumeBoost);
         current = (TextView) findViewById(R.id.currentTime);
         end = (TextView) findViewById(R.id.totalTime);
         progress = (SeekBar) findViewById(R.id.seekBar);
@@ -126,6 +126,16 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view) {
         boolean wantPlayback;
         switch (view.getId()) {
+            case R.id.home:
+// go to the playing file
+                if(!Stuff.playingFile.isEmpty() && !Stuff.playingDir.isEmpty())
+                {
+                    Stuff.currentFile = new String(Stuff.playingFile);
+                    Stuff.currentDir = new String(Stuff.playingDir);
+                    updateFiles();
+                }
+                break;
+
             case R.id.play:
                 if (Player.isPlaying)
                     Player.stop();
@@ -160,22 +170,45 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
 
-            case R.id.volumeUp:
-                    Stuff.volume++;
+            case R.id.volumeBoost:
+                    if(volumeBoost.isChecked())
+                        Stuff.volume = 1;
+                    else
+                        Stuff.volume = 0;
                     Stuff.save();
-                    updateVolume();
                     break;
-            case R.id.volumeDown:
-                if(Stuff.volume > 0) Stuff.volume--;
-                Stuff.save();
-                updateVolume();
-                break;
 
             case R.id.keep_alive:
                 Stuff.keepAlive = keepAlive.isChecked();
                 Stuff.save();
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        Log.i("x", "onBackPressed");
+
+        Stuff.currentDir = upDir(Stuff.currentDir);
+
+        // TODO: common function to submit directory
+        // strip trailing / from directory
+        while(Stuff.currentDir.length() > 1 && Stuff.currentDir.charAt(Stuff.currentDir.length() - 1) == '/')
+            Stuff.currentDir = Stuff.currentDir.substring(0, Stuff.currentDir.length() - 1);
+// if we entered the currently playing file's directory,
+// select the currently playing file
+        if(Stuff.currentDir.equals(Stuff.playingDir))
+            Stuff.currentFile = new String(Stuff.playingFile);
+        else
+            Stuff.currentFile = "";
+        // reposition the listview
+        resetListY = true;
+        Stuff.save();
+
+        updateFiles();
+        Prober.instance.probe();
+
     }
 
     static String upDir(String dir)
@@ -414,7 +447,8 @@ public class MainActivity extends AppCompatActivity {
                                         long id)
                 {
                     DirEntry file = files[position];
-                    if(file.isDir) {
+                    if(file.isDir) 
+                    {
 // selected a directory
 // set the textbox
 //                        title.setText(file.name + "/");
@@ -446,15 +480,18 @@ public class MainActivity extends AppCompatActivity {
                         updateFiles();
                         Prober.instance.probe();
                     }
-                    else if(!Stuff.currentFile.equals(files[position].name))
+                    else 
+                    if(!Stuff.currentFile.equals(files[position].name))
                     {
 // selected a different file
+                        boolean wantPlayback = Player.isPlaying;
                         Player.stop();
                         Stuff.currentFile = files[position].name;
                         Stuff.currentTime = 0;
                         Stuff.length = 0;
                         Prober.instance.probe();
                         Stuff.save();
+                        if(wantPlayback) Player.start();
 
                         Log.i("MainActivity", "updateFiles " + Stuff.currentFile);
                         adapter.notifyDataSetChanged();
@@ -508,8 +545,10 @@ public class MainActivity extends AppCompatActivity {
 
     void updateVolume()
     {
-
-        volume.setText(String.valueOf(Stuff.volume));
+        if(Stuff.volume > 0)
+            volumeBoost.setChecked(true);
+        else
+            volumeBoost.setChecked(false);
     }
 
 }
